@@ -1,37 +1,37 @@
 // TODO: Include packages needed for this application
 const inquirer = require("inquirer");
-const fs = require("fs");
+const { writeFile } = require("fs").promises;
 // TODO: Create an array of questions for user input
-inquirer
-  .prompt([
+const promptUser = () => {
+  return inquirer.prompt([
     {
       type: "input",
-      name: "project title",
+      name: "projectTitle",
       message: "What is your project title?",
     },
     {
       type: "input",
-      name: "project description",
+      name: "projectDescription",
       message: "Please provide a brief description of the project?",
     },
     {
       type: "input",
-      name: "installation instructions",
+      name: "installationInstructions",
       message: "How do you install your project?",
     },
     {
       type: "input",
-      name: "usage information",
+      name: "usageInfo",
       message: "How is this project used?",
     },
     {
       type: "input",
-      name: "contribution guidelines",
+      name: "contributionGuidelines",
       message: "Please enter any contributors to this project",
     },
     {
       type: "input",
-      name: "test instructions",
+      name: "testInstructions",
       message: "Please enter any test instructions for your project",
     },
     {
@@ -45,19 +45,71 @@ inquirer
         "Microsoft Public License",
       ],
     },
-  ])
-  .then((answers) => {
-    const htmlPageContent = generateHTML(answers);
-    fs.writeFile("index.html", htmlPageContent, (err) =>
-      err ? console.log(err) : console.log("Successfully created index.html!")
-    );
-  });
+    {
+      type: "input",
+      name: "githubUsername",
+      message: "Please enter your GitHub username",
+    },
+    {
+      type: "input",
+      name: "email",
+      message: "Please enter your email",
+    },
+  ]);
+};
 
 // TODO: Create a function to write README file
-function writeToFile(fileName, data) {}
-
+const generateReadMe = ({
+  projectTitle,
+  projectDescription,
+  installationInstructions,
+  usageInfo,
+  contributionGuidelines,
+  testInstructions,
+  license,
+  githubUsername,
+  email,
+}) =>
+  `# ${projectTitle}
+    
+## Description
+${projectDescription}
+      
+## Table of Contents
+      
+ - [Installation](#installation)
+ - [Usage](#usage)
+- [Credits](#credits)
+- [License](#license)
+      
+## Installation
+${installationInstructions}
+      
+## Usage
+${usageInfo}
+      
+## Credits
+${contributionGuidelines}
+      
+## License
+${license}
+      
+## Badges
+      
+![${license}](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fgithub.com%2Fbadges%2Fshields%2Fraw%2Fmaster%2Fpackage.json)
+      
+## Questions
+Thanks so much for checking out this repo! If you have any questions you can reach out to me here on github at ${githubUsername} or you can reach me via email at ${email}!
+    
+## Tests
+${testInstructions}`;
 // TODO: Create a function to initialize app
-function init() {}
+const init = () => {
+  promptUser()
+    .then((answers) => writeFile("README.md", generateReadMe(answers)))
+    .then(() => console.log("Successfully wrote README!"))
+    .catch((err) => console.error(err));
+};
 
 // Function call to initialize app
 init();
